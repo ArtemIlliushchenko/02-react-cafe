@@ -1,73 +1,59 @@
 # React + TypeScript + Vite
+# Домашнє завдання 2 – Відгуки про кав’ярню (React + TypeScript)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Опис
+Друге домашнє завдання з TypeScript.  
+Практика типізації React-компонентів, пропсів, станів, union-типів та інтерфейсів у функціональних компонентах.
 
-Currently, two official plugins are available:
+Це класична «відгуки про сервіс» (аналог «Feedback Widget»), але повністю на TypeScript з чіткою типізацією всіх пропсів, станів та колбеків.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Технології / стек
+- React
+- TypeScript
+- Vite 
+- CSS-модулі (module.css)
+- Хуки: `useState`
+- Union-типи (`'good' | 'neutral' | 'bad'`)
+- Інтерфейси для стану та пропсів
+- Умовний рендеринг
+- Типізація колбеків та пропсів
 
-## React Compiler
+## Структура проєкту
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+| Файл / Компонент     | Призначення                              | Основні типи / особливості                              |
+|----------------------|------------------------------------------|------------------------------------------------------------------|
+| src/types/votes.ts   | Типи та інтерфейси                       | `VoteType`, `Votes` (інтерфейс стану)                            |
+| src/App.tsx          | Головний компонент                       | `useState<Votes>`, обчислення totalVotes та positiveRate         |
+| src/components/CafeInfo/CafeInfo.tsx | Заголовок та опис кав’ярні               | Статичний компонент без пропсів                                  |
+| src/components/Notification/Notification.tsx | Повідомлення «No feedback yet»           | Показується, коли totalVotes === 0                               |
+| src/components/VoteOptions/VoteOptions.tsx | Кнопки Good / Neutral / Bad + Reset      | Пропси: `onVote`, `onReset`, `canReset`                          |
+| src/components/VoteStats/VoteStats.tsx | Статистика відгуків                      | Пропси: `votes: Votes`, `totalVotes`, `positiveRate`             |
+| src/App.module.css   | Стилі головної обгортки                  | —                                                                |
+| src/components/*/module.css | Локальні стилі компонентів               | —                                                                |
 
-## Expanding the ESLint configuration
+## Основні типи (з types/votes.ts)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```ts
+export type VoteType = 'good' | 'neutral' | 'bad';
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+export interface Votes {
+  good: number;
+  neutral: number;
+  bad: number;
+}
 ```
+## Функціонал
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Три кнопки для оцінки: Good / Neutral / Bad
+Кнопка Reset з’являється тільки після першої оцінки (totalVotes > 0)
+При відсутності голосів показується повідомлення «No feedback yet»
+Автоматичний підрахунок:
+Total votes
+Positive feedback percentage (округлення до цілого числа)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Стан зберігається в useState<Votes>
+Усі колбеки та пропси строго типізовані → TypeScript ловить помилки на етапі написання коду
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Посилання
+
+Демо [посилання](https://02-react-cafe-yfg1.vercel.app)
